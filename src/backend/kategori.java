@@ -128,4 +128,8 @@ public class kategori {
         String SQL = "DELETE FROM kategori WHERE idkategori = '" + this.idkategori + "'";
         DBHelper.executeQuery(SQL);
     } 
+    
+    public String toString(){
+        return nama;
+    }
 }
