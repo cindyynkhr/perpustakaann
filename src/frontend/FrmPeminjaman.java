@@ -26,6 +26,7 @@ public class FrmPeminjaman extends javax.swing.JFrame {
         private void kosongkanForm() {
         txtIdPeminjaman.setText("0");
         txtIdAnggota.setText("");
+        txtIdPegawai.setText("");
         txtIdBuku.setText("");
         txtTanggalPinjam.setText("");
         txtTanggalKembali.setText("");
@@ -34,9 +35,9 @@ public class FrmPeminjaman extends javax.swing.JFrame {
     }
 
     private void tampilkanData() {
-        String[] kolom = {"ID", "Anggota", "Buku", "Tanggal Pinjam", "Tanggal Kembali", "Status"};
+        String[] kolom = {"ID", "Anggota", "Buku","Pegawai", "Tanggal Pinjam", "Tanggal Kembali"};
         ArrayList<peminjaman> list = new peminjaman().getAll();
-        Object rowData[] = new Object[6];
+        Object rowData[] = new Object[8];
 
         tblPeminjaman.setModel(new DefaultTableModel(new Object[][]{}, kolom));
 
@@ -44,9 +45,10 @@ public class FrmPeminjaman extends javax.swing.JFrame {
             rowData[0] = p.getIdPeminjaman();
             rowData[1] = p.getAnggota().getNama();
             rowData[2] = p.getBuku().getJudul();
-            rowData[3] = p.getTanggalPinjam();
-            rowData[4] = p.getTanggalKembali();
-            rowData[5] = p.getStatus() ? "Dikembalikan" : "Belum Dikembalikan";
+            rowData[3] = p.getPegawai().getNama();
+            rowData[4] = p.getTanggalPinjam();
+            rowData[5] = p.getTanggalKembali();
+//            rowData[6] = p.getStatus() ? "Dikembalikan" : "Belum Dikembalikan";
 
             ((DefaultTableModel) tblPeminjaman.getModel()).addRow(rowData);
         }
@@ -71,12 +73,23 @@ public class FrmPeminjaman extends javax.swing.JFrame {
             lblJudul.setText("Buku tidak ditemukan");
         }
     }
+    
+      private void cariPegawai() {
+        int idPegawai = Integer.parseInt(txtIdPegawai.getText());
+        pegawai pegawai = new pegawai().getById(idPegawai);
+        if (pegawai != null) {
+            lblPegawai.setText(pegawai.getNama());
+        } else {
+            lblPegawai.setText("Pegawai tidak ditemukan");
+        }
+    }
 
     private void simpanPeminjaman() {
         peminjaman p = new peminjaman();
         p.setIdPeminjaman(Integer.parseInt(txtIdPeminjaman.getText()));
         p.setAnggota(new anggota().getById(Integer.parseInt(txtIdAnggota.getText())));
         p.setBuku(new buku().getById(Integer.parseInt(txtIdBuku.getText())));
+        p.setPegawai(new pegawai().getById(Integer.parseInt(txtIdPegawai.getText())));
         p.setTanggalPinjam(txtTanggalPinjam.getText());
         p.setTanggalKembali(txtTanggalKembali.getText());
         p.save();
@@ -92,19 +105,19 @@ public class FrmPeminjaman extends javax.swing.JFrame {
         kosongkanForm();
     }
 
-    private void kembalikanBuku() {
-        int id = Integer.parseInt(txtIdPeminjaman.getText());
-        peminjaman peminjaman = new peminjaman().getById(id);
-        if (peminjaman != null && !peminjaman.getStatus()) {
-            pengembalian pengembalian = new pengembalian(peminjaman, java.time.LocalDate.now().toString());
-            pengembalian.save();
-            tampilkanData();
-            kosongkanForm();
-            JOptionPane.showMessageDialog(this, "Buku berhasil dikembalikan.");
-        } else {
-            JOptionPane.showMessageDialog(this, "Buku sudah dikembalikan atau ID tidak valid.");
-        }
-    }
+//    private void kembalikanBuku() {
+//        int id = Integer.parseInt(txtIdPeminjaman.getText());
+//        peminjaman peminjaman = new peminjaman().getById(id);
+//        if (peminjaman != null && !peminjaman.getStatus()) {
+//            pengembalian pengembalian = new pengembalian(peminjaman, java.time.LocalDate.now().toString());
+//            pengembalian.save();
+//            tampilkanData();
+//            kosongkanForm();
+//            JOptionPane.showMessageDialog(this, "Buku berhasil dikembalikan.");
+//        } else {
+//            JOptionPane.showMessageDialog(this, "Buku sudah dikembalikan atau ID tidak valid.");
+//        }
+//    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -115,6 +128,8 @@ public class FrmPeminjaman extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel7 = new javax.swing.JLabel();
+        txtTanggalPinjam1 = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -131,10 +146,18 @@ public class FrmPeminjaman extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         tblPeminjaman = new javax.swing.JTable();
         jLabel5 = new javax.swing.JLabel();
-        txtTanggalKembali = new javax.swing.JTextField();
         lblNama = new javax.swing.JLabel();
         lblJudul = new javax.swing.JLabel();
-        btnKembali = new javax.swing.JButton();
+        jLabel6 = new javax.swing.JLabel();
+        txtIdPegawai = new javax.swing.JTextField();
+        btnCari = new javax.swing.JButton();
+        lblPegawai = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        txtTanggalKembali = new javax.swing.JTextField();
+        btnPengembalian = new javax.swing.JButton();
+
+        jLabel7.setText("jLabel7");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -149,6 +172,11 @@ public class FrmPeminjaman extends javax.swing.JFrame {
         txtIdPeminjaman.setEnabled(false);
 
         btnCari1.setText("cari");
+        btnCari1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCari1ActionPerformed(evt);
+            }
+        });
 
         txtIdBuku.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -157,6 +185,17 @@ public class FrmPeminjaman extends javax.swing.JFrame {
         });
 
         btnCari2.setText("cari");
+        btnCari2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCari2ActionPerformed(evt);
+            }
+        });
+
+        txtTanggalPinjam.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtTanggalPinjamActionPerformed(evt);
+            }
+        });
 
         btnSimpan.setText("Simpan");
         btnSimpan.addActionListener(new java.awt.event.ActionListener() {
@@ -203,10 +242,33 @@ public class FrmPeminjaman extends javax.swing.JFrame {
 
         lblJudul.setText("Judul");
 
-        btnKembali.setText("Kembalikan");
-        btnKembali.addActionListener(new java.awt.event.ActionListener() {
+        jLabel6.setText("ID Pegawai");
+
+        txtIdPegawai.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnKembaliActionPerformed(evt);
+                txtIdPegawaiActionPerformed(evt);
+            }
+        });
+
+        btnCari.setText("cari");
+        btnCari.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCariActionPerformed(evt);
+            }
+        });
+
+        lblPegawai.setText("Pegawai");
+
+        jLabel8.setText("Format: YYYY/MM/DD");
+
+        jLabel9.setText("Format: YYYY/MM/DD");
+
+        txtTanggalKembali.setText("0000-00-00");
+
+        btnPengembalian.setText("Pengembalian");
+        btnPengembalian.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPengembalianActionPerformed(evt);
             }
         });
 
@@ -217,7 +279,6 @@ public class FrmPeminjaman extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btnSimpan)
                         .addGap(18, 18, 18)
@@ -225,32 +286,44 @@ public class FrmPeminjaman extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(btnHapus)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnKembali))
+                        .addComponent(btnPengembalian))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
                             .addComponent(jLabel2)
                             .addComponent(jLabel3)
                             .addComponent(jLabel4)
-                            .addComponent(jLabel5))
+                            .addComponent(jLabel5)
+                            .addComponent(jLabel6))
                         .addGap(30, 30, 30)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(txtIdPeminjaman)
-                                    .addComponent(txtIdAnggota)
-                                    .addComponent(txtIdBuku, javax.swing.GroupLayout.DEFAULT_SIZE, 69, Short.MAX_VALUE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(txtIdPeminjaman)
+                                            .addComponent(txtIdAnggota)
+                                            .addComponent(txtIdBuku, javax.swing.GroupLayout.DEFAULT_SIZE, 69, Short.MAX_VALUE))
+                                        .addGap(18, 18, 18)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(btnCari1)
+                                            .addComponent(btnCari2)))
+                                    .addComponent(txtTanggalPinjam)
+                                    .addComponent(txtTanggalKembali))
                                 .addGap(18, 18, 18)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(btnCari1)
-                                    .addComponent(btnCari2)))
-                            .addComponent(txtTanggalPinjam)
-                            .addComponent(txtTanggalKembali))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblNama)
-                            .addComponent(lblJudul))))
-                .addContainerGap(13, Short.MAX_VALUE))
+                                    .addComponent(lblNama)
+                                    .addComponent(lblJudul)
+                                    .addComponent(jLabel8)
+                                    .addComponent(jLabel9)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(txtIdPegawai, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnCari)
+                                .addGap(18, 18, 18)
+                                .addComponent(lblPegawai))))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(12, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -273,21 +346,29 @@ public class FrmPeminjaman extends javax.swing.JFrame {
                     .addComponent(lblJudul))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(txtIdPegawai, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnCari)
+                    .addComponent(lblPegawai))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(txtTanggalPinjam, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtTanggalPinjam, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel8))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
+                    .addComponent(jLabel9)
                     .addComponent(txtTanggalKembali, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(13, 13, 13)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnSimpan)
                     .addComponent(btnTambahBaru)
                     .addComponent(btnHapus)
-                    .addComponent(btnKembali))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE)
-                .addContainerGap())
+                    .addComponent(btnPengembalian))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -300,15 +381,47 @@ public class FrmPeminjaman extends javax.swing.JFrame {
 
     private void tblPeminjamanMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblPeminjamanMouseClicked
         // TODO add your handling code here:
+        DefaultTableModel model = (DefaultTableModel) tblPeminjaman.getModel();
+        int row = tblPeminjaman.getSelectedRow();
+
+        if (row >= 0) {
+            peminjaman pem = new peminjaman().getById(Integer.parseInt(model.getValueAt(row, 0).toString()));
+
+            txtIdPeminjaman.setText(String.valueOf(pem.getIdPeminjaman()));
+            txtIdAnggota.setText(String.valueOf(pem.getAnggota().getIdanggota()));
+            txtIdBuku.setText(String.valueOf(pem.getBuku().getIdBuku()));
+            txtIdPegawai.setText(String.valueOf(pem.getPegawai().getIdpegawai()));
+            txtTanggalPinjam.setText(pem.getTanggalPinjam());
+            txtTanggalKembali.setText(pem.getTanggalKembali());
+            lblNama.setText(pem.getAnggota().getNama());
+            lblPegawai.setText(pem.getAnggota().getNama());
+            lblJudul.setText(pem.getBuku().getJudul());
+        }
     }//GEN-LAST:event_tblPeminjamanMouseClicked
 
     private void btnTambahBaruActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTambahBaruActionPerformed
         // TODO add your handling code here:
+        kosongkanForm();
     }//GEN-LAST:event_btnTambahBaruActionPerformed
 
     private void btnSimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanActionPerformed
         // TODO add your handling code here:
-         simpanPeminjaman();
+//        simpanPeminjaman();
+        peminjaman pmj = new peminjaman();
+        pmj.setIdPeminjaman(Integer.parseInt(txtIdPeminjaman.getText()));
+
+        anggota anggota = new anggota().getById(Integer.parseInt(txtIdAnggota.getText()));
+        buku buku = new buku().getById(Integer.parseInt(txtIdBuku.getText()));
+        pegawai pegawai = new pegawai().getById(Integer.parseInt(txtIdPegawai.getText()));
+        pmj.setAnggota(anggota);
+        pmj.setBuku(buku);
+        pmj.setPegawai(pegawai);
+        pmj.setTanggalPinjam(txtTanggalPinjam.getText());
+        pmj.setTanggalKembali(txtTanggalKembali.getText());
+        pmj.save();
+        
+        txtIdPeminjaman.setText(Integer.toString(pmj.getIdPeminjaman()));
+        tampilkanData();
     }//GEN-LAST:event_btnSimpanActionPerformed
 
     private void btnHapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHapusActionPerformed
@@ -316,10 +429,33 @@ public class FrmPeminjaman extends javax.swing.JFrame {
          hapusPeminjaman();
     }//GEN-LAST:event_btnHapusActionPerformed
 
-    private void btnKembaliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKembaliActionPerformed
+    private void btnCari1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCari1ActionPerformed
         // TODO add your handling code here:
-        kembalikanBuku();
-    }//GEN-LAST:event_btnKembaliActionPerformed
+        cariAnggota();
+    }//GEN-LAST:event_btnCari1ActionPerformed
+
+    private void btnCari2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCari2ActionPerformed
+        // TODO add your handling code here:
+        cariBuku();
+    }//GEN-LAST:event_btnCari2ActionPerformed
+
+    private void btnCariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCariActionPerformed
+        // TODO add your handling code here:
+        cariPegawai();
+    }//GEN-LAST:event_btnCariActionPerformed
+
+    private void btnPengembalianActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPengembalianActionPerformed
+        // TODO add your handling code here:
+//        kembalikanBuku();
+    }//GEN-LAST:event_btnPengembalianActionPerformed
+
+    private void txtIdPegawaiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdPegawaiActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtIdPegawaiActionPerformed
+
+    private void txtTanggalPinjamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTanggalPinjamActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtTanggalPinjamActionPerformed
 
     /**
      * @param args the command line arguments
@@ -357,10 +493,11 @@ public class FrmPeminjaman extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnCari;
     private javax.swing.JButton btnCari1;
     private javax.swing.JButton btnCari2;
     private javax.swing.JButton btnHapus;
-    private javax.swing.JButton btnKembali;
+    private javax.swing.JButton btnPengembalian;
     private javax.swing.JButton btnSimpan;
     private javax.swing.JButton btnTambahBaru;
     private javax.swing.JLabel jLabel1;
@@ -368,14 +505,21 @@ public class FrmPeminjaman extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblJudul;
     private javax.swing.JLabel lblNama;
+    private javax.swing.JLabel lblPegawai;
     private javax.swing.JTable tblPeminjaman;
     private javax.swing.JTextField txtIdAnggota;
     private javax.swing.JTextField txtIdBuku;
+    private javax.swing.JTextField txtIdPegawai;
     private javax.swing.JTextField txtIdPeminjaman;
     private javax.swing.JTextField txtTanggalKembali;
     private javax.swing.JTextField txtTanggalPinjam;
+    private javax.swing.JTextField txtTanggalPinjam1;
     // End of variables declaration//GEN-END:variables
 }
